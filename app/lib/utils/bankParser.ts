@@ -12,8 +12,10 @@ export interface ParsedTransaction {
 // HELPER: Bersihkan string nominal Rupiah
 // ─────────────────────────────────────────────
 function parseRupiah(raw: string): number {
-  // Hapus semua karakter non-digit (titik, koma, spasi)
-  const clean = raw.replace(/[^0-9]/g, '')
+  // Abaikan sen di belakang koma (misal: ,00)
+  const withoutDecimal = raw.split(',')[0]
+  // Hapus semua karakter non-digit (titik, spasi, dsb)
+  const clean = withoutDecimal.replace(/[^0-9]/g, '')
   return parseInt(clean, 10) || 0
 }
 
@@ -116,6 +118,52 @@ function parseBNI(text: string): ParsedTransaction | null {
 }
 
 // ─────────────────────────────────────────────
+// PARSER: Bank Jago (no-reply@jago.com)
+// ─────────────────────────────────────────────
+function parseJago(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+
+  const amount = parseRupiah(amountMatch[1])
+  
+  // Bank Jago usually uses "menerima uang", "uang masuk", "top up" for credit
+  const isCredit = /(?:menerima|masuk|top up|terima|kredit|cr\b)/i.test(text)
+  
+  const descMatch = text.match(/(?:keterangan|catatan|berita|untuk|ke|dari|merchant)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi Bank Jago'
+
+  return {
+    amount,
+    type: isCredit ? 'CREDIT' : 'DEBIT',
+    description,
+    bank: 'Jago'
+  }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: Bank BPD DIY
+// ─────────────────────────────────────────────
+function parseBPDDIY(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+
+  const amount = parseRupiah(amountMatch[1])
+  
+  // Deteksi kredit: uang masuk, kredit, penyetoran
+  const isCredit = /(?:masuk|kredit|setor|terima|cr\b)/i.test(text)
+  
+  const descMatch = text.match(/(?:keterangan|berita|uraian)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi Bank BPD DIY'
+
+  return {
+    amount,
+    type: isCredit ? 'CREDIT' : 'DEBIT',
+    description,
+    bank: 'BPD DIY'
+  }
+}
+
+// ─────────────────────────────────────────────
 // PARSER UTAMA: Deteksi bank dari pengirim/konten
 // ─────────────────────────────────────────────
 export class GenericBankParser {
@@ -146,12 +194,24 @@ export class GenericBankParser {
       if (result) return result
     }
 
+    if (sender.includes('jago.com') || sender.includes('@jago')) {
+      const result = parseJago(text)
+      if (result) return result
+    }
+
+    if (sender.includes('bpddiy') || sender.includes('bpd diy')) {
+      const result = parseBPDDIY(text)
+      if (result) return result
+    }
+
     // Fallback: coba semua parser berurutan
     return (
       parseBCA(text) ||
       parseMandiri(text) ||
       parseBRI(text) ||
       parseBNI(text) ||
+      parseJago(text) ||
+      parseBPDDIY(text) ||
       // Last resort: cari pola "Rp X" apapun
       (() => {
         const m = text.match(/Rp\s?([0-9.,]+)/i)
