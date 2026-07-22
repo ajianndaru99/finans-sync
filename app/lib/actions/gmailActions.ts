@@ -33,12 +33,14 @@ export async function enableGmailWatch() {
 
     const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
 
+    const topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${process.env.GCP_PUBSUB_TOPIC}`
+    
     // Memanggil Watch API untuk mengirim notifikasi ke Pub/Sub
     const res = await gmail.users.watch({
       userId: 'me',
       requestBody: {
         labelIds: ['INBOX'], // pantau inbox
-        topicName: `projects/${process.env.GCP_PROJECT_ID}/topics/${process.env.GCP_PUBSUB_TOPIC}`, // Misal: projects/finans-sync-123/topics/gmail-updates
+        topicName: topicName,
       }
     })
 
@@ -53,6 +55,7 @@ export async function enableGmailWatch() {
     return { success: true, historyId: res.data.historyId }
   } catch (error: any) {
     console.error('Gmail Watch Error:', error)
-    return { error: error.message || 'Gagal terhubung ke Google. Pastikan GCP Client ID & Secret sudah diset di Vercel.' }
+    const topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${process.env.GCP_PUBSUB_TOPIC}`
+    return { error: `${error.message} (Dikirim: ${topicName}). Cek spasi ekstra di Env Vars.` }
   }
 }
