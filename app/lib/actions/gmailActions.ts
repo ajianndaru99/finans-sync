@@ -33,7 +33,10 @@ export async function enableGmailWatch() {
 
     const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
 
-    const topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${process.env.GCP_PUBSUB_TOPIC}`
+    let topicName = process.env.GCP_PUBSUB_TOPIC || ''
+    if (!topicName.startsWith('projects/')) {
+      topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${topicName}`
+    }
     
     // Memanggil Watch API untuk mengirim notifikasi ke Pub/Sub
     const res = await gmail.users.watch({
@@ -55,7 +58,10 @@ export async function enableGmailWatch() {
     return { success: true, historyId: res.data.historyId }
   } catch (error: any) {
     console.error('Gmail Watch Error:', error)
-    const topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${process.env.GCP_PUBSUB_TOPIC}`
-    return { error: `${error.message} (Dikirim: ${topicName}). Cek spasi ekstra di Env Vars.` }
+    let errorTopicName = process.env.GCP_PUBSUB_TOPIC || ''
+    if (!errorTopicName.startsWith('projects/')) {
+      errorTopicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${errorTopicName}`
+    }
+    return { error: `${error.message} (Dikirim: ${errorTopicName}). Cek spasi ekstra di Env Vars.` }
   }
 }
