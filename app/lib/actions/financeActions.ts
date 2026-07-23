@@ -40,6 +40,7 @@ export async function createTransaction(prevState: any, formData: FormData) {
   const type = formData.get('type') as string
   const amount = parseFloat(formData.get('amount') as string)
   const description = formData.get('description') as string
+  const created_at = formData.get('created_at') as string
 
   const insertData: any = {
     user_id: user.id,
@@ -53,10 +54,74 @@ export async function createTransaction(prevState: any, formData: FormData) {
     insertData.category_id = category_id
   }
 
+  if (created_at && created_at !== '') {
+    insertData.created_at = new Date(created_at).toISOString()
+  }
+
   const { error } = await supabase.from('transactions').insert(insertData)
 
   if (error) {
     console.error('Error creating transaction:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}
+
+export async function updateTransaction(prevState: any, formData: FormData) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  const id = formData.get('id') as string
+  const account_id = formData.get('account_id') as string
+  const type = formData.get('type') as string
+  const amount = parseFloat(formData.get('amount') as string)
+  const description = formData.get('description') as string
+  const created_at = formData.get('created_at') as string
+
+  const updateData: any = {
+    account_id,
+    type,
+    amount,
+    description
+  }
+
+  if (created_at && created_at !== '') {
+    updateData.created_at = new Date(created_at).toISOString()
+  }
+
+  const { error } = await supabase
+    .from('transactions')
+    .update(updateData)
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error updating transaction:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}
+
+export async function deleteTransaction(id: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  const { error } = await supabase
+    .from('transactions')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error deleting transaction:', error)
     return { error: error.message }
   }
 

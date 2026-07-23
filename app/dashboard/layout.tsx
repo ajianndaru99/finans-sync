@@ -89,7 +89,7 @@ export default async function DashboardLayout({
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 glass-panel rounded-2xl flex justify-around items-center p-3 z-50 backdrop-blur-xl border border-white/10 shadow-2xl">
+      <nav className="md:hidden fixed bottom-4 left-4 right-4 glass-panel-dark rounded-2xl flex justify-around items-center p-3 z-50 border border-white/10 shadow-2xl">
         <Link href="/dashboard" className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors">
           <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
           <span className="text-[10px] font-medium">Home</span>

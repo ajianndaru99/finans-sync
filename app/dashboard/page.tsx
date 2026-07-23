@@ -3,6 +3,7 @@ import Link from 'next/link'
 import AddAccountModal from '@/app/components/AddAccountModal'
 import NewEntryButton from '@/app/components/NewEntryButton'
 import AutoSyncManager from '@/app/components/AutoSyncManager'
+import TransactionList from '@/app/components/TransactionList'
 
 export default async function DashboardPage() {
   let accounts: any[] = []
@@ -100,29 +101,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="glass-panel overflow-hidden">
-          <div className="divide-y divide-white/5">
-            {transactions.length === 0 && (
-              <div className="text-gray-500 text-sm p-6 text-center">No transactions yet.</div>
-            )}
-            {transactions.map(tx => (
-              <div key={tx.id} className="p-4 flex items-center justify-between gap-3 hover:bg-white/5 transition-colors">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center text-sm bg-white/5 border border-white/10 ${tx.type === 'CREDIT' ? 'text-primary' : 'text-red-400'}`}>
-                    {tx.type === 'CREDIT' ? '↓' : '↑'}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-200 truncate max-w-[180px]">{tx.description || 'Transfer'}</p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {new Date(tx.created_at).toLocaleDateString('id-ID')} • {tx.accounts?.name || 'Unknown'}
-                    </p>
-                  </div>
-                </div>
-                <div className={`text-sm font-bold tabular-nums shrink-0 ${tx.type === 'CREDIT' ? 'text-primary' : 'text-gray-300'}`}>
-                  {tx.type === 'CREDIT' ? '+' : '-'}{formatIDR(Number(tx.amount))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <TransactionList transactions={transactions} accounts={accounts} />
         </div>
       </section>
     </div>

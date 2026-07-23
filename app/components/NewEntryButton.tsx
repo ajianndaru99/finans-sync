@@ -53,16 +53,17 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
       {/* Modal Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-black/80"
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false) }}
         >
-          {/* Modal Sheet (slide up dari bawah di HP) - Tambah max-h dan overflow agar bisa discroll jika kepanjangan, pb-12 untuk menghindari bottom nav */}
-          <div className="w-full md:max-w-md bg-[#0e0e11] border border-white/10 rounded-t-3xl md:rounded-2xl p-6 pb-24 md:pb-6 shadow-2xl animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
+          {/* Modal Sheet (slide up dari bawah di HP) - Tambah max-h dan overflow agar bisa discroll jika kepanjangan */}
+          <div className="w-full md:max-w-md bg-[#0e0e11] border border-white/10 rounded-t-3xl md:rounded-2xl p-6 pb-6 shadow-2xl animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
             <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-5 md:hidden"></div>
 
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-bold text-white">Tambah Transaksi</h3>
               <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
               >
@@ -95,6 +96,18 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
                     </label>
                   ))}
                 </div>
+              </div>
+
+              {/* Tanggal / Jam */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Waktu Transaksi (Opsional)</label>
+                <input
+                  type="datetime-local"
+                  name="created_at"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-gray-100 outline-none text-sm color-scheme-dark"
+                  style={{ colorScheme: 'dark' }}
+                />
+                <p className="text-[10px] text-gray-500 mt-1.5 ml-1">Kosongkan jika transaksi terjadi sekarang.</p>
               </div>
 
               {/* Jumlah */}
