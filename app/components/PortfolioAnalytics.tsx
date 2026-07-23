@@ -210,7 +210,7 @@ export default function PortfolioAnalytics({
       <div>
         <h3 className="text-lg font-bold text-white mb-4">Riwayat Transaksi ({timeRange === 'MONTH' ? 'Bulan Ini' : timeRange === 'YEAR' ? 'Tahun Ini' : 'Semua'})</h3>
         {filteredTransactions.length > 0 ? (
-          <TransactionList initialTransactions={filteredTransactions} accounts={accounts} />
+          <TransactionList transactions={filteredTransactions} accounts={accounts} />
         ) : (
           <div className="text-center py-10 glass-card rounded-2xl border border-white/10">
             <div className="text-4xl mb-3">📭</div>
