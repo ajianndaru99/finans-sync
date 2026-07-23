@@ -39,8 +39,8 @@ export default async function InvestmentsPage() {
         {investments.length === 0 ? (
           <div className="col-span-full p-12 text-center text-gray-500 glass-panel">
             <p>No investment assets found.</p>
-            <button className="mt-4 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-              Add First Asset
+            <button className="mt-4 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-not-allowed opacity-50" title="Fitur dalam pengembangan">
+              Add First Asset (Coming Soon)
             </button>
           </div>
         ) : (

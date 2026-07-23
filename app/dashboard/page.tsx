@@ -1,7 +1,7 @@
 import { getAccounts, getTransactions } from '@/app/lib/services/financeService'
 import Link from 'next/link'
 import AddAccountModal from '@/app/components/AddAccountModal'
-import AddTransactionModal from '@/app/components/AddTransactionModal'
+import NewEntryButton from '@/app/components/NewEntryButton'
 import EnableSyncButton from '@/app/components/EnableSyncButton'
 
 export default async function DashboardPage() {
@@ -38,22 +38,19 @@ export default async function DashboardPage() {
       {/* Hero: Total Net Worth */}
       <section className="glass-card p-5 md:p-8 relative overflow-hidden rounded-2xl">
         <div className="absolute top-0 right-0 p-32 bg-primary/10 rounded-full blur-[100px] -mr-16 -mt-16 pointer-events-none"></div>
-        <div className="flex justify-between items-start relative z-10 gap-3">
-          <div className="min-w-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10 gap-4">
+          <div className="min-w-0 w-full">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5">Total Net Worth</p>
-            <h2 className="text-2xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-400 truncate">
+            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-400 truncate">
               {formatIDR(netWorth)}
             </h2>
           </div>
-          <div className="shrink-0">
+          <div className="shrink-0 w-full md:w-auto mt-2 md:mt-0">
             <EnableSyncButton />
           </div>
         </div>
-        <div className="mt-5 flex gap-3 relative z-10">
-          <AddTransactionModal accounts={accounts} />
-          <button className="px-4 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors">
-            View Report
-          </button>
+        <div className="mt-6 flex flex-wrap gap-3 relative z-10">
+          <NewEntryButton accounts={accounts} />
         </div>
       </section>
 

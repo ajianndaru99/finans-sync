@@ -12,12 +12,31 @@ interface Account {
 export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
   const [isOpen, setIsOpen] = useState(false)
   const [state, formAction, isPending] = useActionState(createTransaction, null)
+  
+  // State untuk format Rupiah
+  const [rawAmount, setRawAmount] = useState('')
+  const [displayAmount, setDisplayAmount] = useState('')
 
   useEffect(() => {
     if (state?.success) {
       setIsOpen(false)
+      setRawAmount('')
+      setDisplayAmount('')
     }
   }, [state])
+
+  // Format angka ke rupiah (dengan pemisah ribuan)
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '') // Hanya ambil angka
+    setRawAmount(value)
+    
+    if (value) {
+      const formatted = new Intl.NumberFormat('id-ID').format(Number(value))
+      setDisplayAmount(formatted)
+    } else {
+      setDisplayAmount('')
+    }
+  }
 
   return (
     <>
@@ -28,7 +47,7 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
         </svg>
-        <span>New Entry</span>
+        <span>Tambah Transaksi</span>
       </button>
 
       {/* Modal Backdrop */}
@@ -37,8 +56,8 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
           className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false) }}
         >
-          {/* Modal Sheet (slide up dari bawah di HP) */}
-          <div className="w-full md:max-w-md bg-[#0e0e11] border border-white/10 rounded-t-3xl md:rounded-2xl p-6 pb-8 md:pb-6 shadow-2xl animate-in slide-in-from-bottom-4 duration-300">
+          {/* Modal Sheet (slide up dari bawah di HP) - Tambah max-h dan overflow agar bisa discroll jika kepanjangan, pb-12 untuk menghindari bottom nav */}
+          <div className="w-full md:max-w-md bg-[#0e0e11] border border-white/10 rounded-t-3xl md:rounded-2xl p-6 pb-24 md:pb-6 shadow-2xl animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
             <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-5 md:hidden"></div>
 
             <div className="flex justify-between items-center mb-5">
@@ -82,13 +101,15 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
               <div>
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Jumlah (Rp)</label>
                 <input
-                  type="number"
-                  name="amount"
+                  type="text"
+                  inputMode="numeric"
+                  value={displayAmount}
+                  onChange={handleAmountChange}
                   required
-                  min="1"
                   placeholder="0"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-gray-100 text-lg font-semibold outline-none placeholder-white/20"
                 />
+                <input type="hidden" name="amount" value={rawAmount} />
               </div>
 
               {/* Akun */}
@@ -107,6 +128,9 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
                     </option>
                   ))}
                 </select>
+                {accounts.length === 1 && (
+                  <p className="text-[10px] text-gray-500 mt-1.5 ml-1">Akun lain akan otomatis bertambah saat email bank masuk.</p>
+                )}
               </div>
 
               {/* Deskripsi */}
@@ -122,8 +146,8 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
 
               <button
                 type="submit"
-                disabled={isPending}
-                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary/20 disabled:opacity-50 active:scale-98 text-sm mt-2"
+                disabled={isPending || !rawAmount}
+                className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary/20 disabled:opacity-50 active:scale-98 text-sm mt-4"
               >
                 {isPending ? 'Menyimpan...' : 'Simpan Transaksi'}
               </button>
