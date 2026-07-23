@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import EditTransactionModal from './EditTransactionModal'
 
-export default function TransactionList({ transactions, accounts }: { transactions: any[], accounts: any[] }) {
+export default function TransactionList({ transactions, accounts, showTypeFilter = false }: { transactions: any[], accounts: any[], showTypeFilter?: boolean }) {
   const [editingTx, setEditingTx] = useState<any>(null)
+  const [filterType, setFilterType] = useState<'ALL' | 'CREDIT' | 'DEBIT' | 'CICILAN'>('ALL')
 
   const formatIDR = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -26,6 +27,14 @@ export default function TransactionList({ transactions, accounts }: { transactio
     })
   }
 
+  const filteredTransactions = transactions.filter(tx => {
+    if (filterType === 'ALL') return true
+    if (filterType === 'CREDIT') return tx.type === 'CREDIT'
+    if (filterType === 'DEBIT') return tx.type === 'DEBIT' && !tx.description?.includes('[Cicilan]')
+    if (filterType === 'CICILAN') return tx.type === 'DEBIT' && tx.description?.includes('[Cicilan]')
+    return true
+  })
+
   if (transactions.length === 0) {
     return (
       <div className="glass-panel p-10 text-center text-gray-500">
@@ -38,8 +47,42 @@ export default function TransactionList({ transactions, accounts }: { transactio
 
   return (
     <>
-      <div className="glass-panel overflow-hidden divide-y divide-white/5">
-        {transactions.map((tx) => (
+      {showTypeFilter && (
+        <div className="flex bg-[#111115] p-1 rounded-xl border border-white/10 w-full mb-3">
+          <button
+            onClick={() => setFilterType('ALL')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${filterType === 'ALL' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Semua
+          </button>
+          <button
+            onClick={() => setFilterType('CREDIT')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${filterType === 'CREDIT' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Masuk
+          </button>
+          <button
+            onClick={() => setFilterType('DEBIT')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${filterType === 'DEBIT' ? 'bg-red-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Keluar
+          </button>
+          <button
+            onClick={() => setFilterType('CICILAN')}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${filterType === 'CICILAN' ? 'bg-orange-500 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+          >
+            Cicilan
+          </button>
+        </div>
+      )}
+
+      {filteredTransactions.length === 0 ? (
+        <div className="glass-panel p-6 text-center text-gray-500 text-sm">
+          Tidak ada transaksi untuk filter ini.
+        </div>
+      ) : (
+        <div className="glass-panel overflow-hidden divide-y divide-white/5">
+          {filteredTransactions.map((tx) => (
           <div 
             key={tx.id} 
             onClick={() => setEditingTx(tx)}
@@ -87,6 +130,7 @@ export default function TransactionList({ transactions, accounts }: { transactio
           </div>
         ))}
       </div>
+      )}
 
       {editingTx && (
         <EditTransactionModal

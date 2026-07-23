@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5 pb-4">
+    <div className="space-y-5 pb-24 md:pb-4">
       {!isConnected && (
         <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           ⚠️ Tidak dapat terhubung ke Supabase. Periksa konfigurasi .env.local Anda.
@@ -100,8 +100,8 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        <div className="glass-panel overflow-hidden">
-          <TransactionList transactions={transactions} accounts={accounts} />
+        <div className="glass-panel overflow-hidden p-2">
+          <TransactionList transactions={transactions} accounts={accounts} showTypeFilter={true} />
         </div>
       </section>
     </div>

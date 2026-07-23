@@ -14,7 +14,7 @@ export default async function TransactionsPage() {
   }
 
   return (
-    <div className="space-y-5 pb-4">
+    <div className="space-y-5 pb-24 md:pb-4">
       <PortfolioAnalytics transactions={transactions} accounts={accounts} />
     </div>
   )
