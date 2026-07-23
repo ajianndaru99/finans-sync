@@ -53,12 +53,11 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
       {/* Modal Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-black/80"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false) }}
         >
-          {/* Modal Sheet (slide up dari bawah di HP) - Tambah max-h dan overflow agar bisa discroll jika kepanjangan */}
-          <div className="w-full md:max-w-md bg-[#0e0e11] border border-white/10 rounded-t-3xl md:rounded-2xl p-6 pb-6 shadow-2xl animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
-            <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-5 md:hidden"></div>
+          {/* Modal Centered */}
+          <div className="w-full max-w-md glass-card border border-white/10 rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
 
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-bold text-white">Tambah Transaksi</h3>

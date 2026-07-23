@@ -37,10 +37,6 @@ export default async function DashboardLayout({
             <span className="w-2 h-2 rounded-full bg-accent mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
             Transactions
           </Link>
-          <Link href="/dashboard/investments" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors group">
-            <span className="w-2 h-2 rounded-full bg-purple-500 mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            Investments
-          </Link>
         </nav>
 
         <div className="mt-auto">
@@ -97,10 +93,6 @@ export default async function DashboardLayout({
         <Link href="/dashboard/transactions" className="flex flex-col items-center p-2 text-gray-400 hover:text-accent transition-colors">
           <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
           <span className="text-[10px] font-medium">Txns</span>
-        </Link>
-        <Link href="/dashboard/investments" className="flex flex-col items-center p-2 text-gray-400 hover:text-purple-400 transition-colors">
-          <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-          <span className="text-[10px] font-medium">Invest</span>
         </Link>
       </nav>
     </div>
