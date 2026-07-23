@@ -21,7 +21,7 @@ interface Account {
   type: string
 }
 
-type TimeRange = 'MONTH' | 'YEAR' | 'ALL'
+type TimeRange = 'MONTH' | 'YEAR' | 'CUSTOM'
 
 export default function PortfolioAnalytics({
   transactions,
@@ -31,6 +31,8 @@ export default function PortfolioAnalytics({
   accounts: Account[]
 }) {
   const [timeRange, setTimeRange] = useState<TimeRange>('MONTH')
+  const [startDate, setStartDate] = useState<string>('')
+  const [endDate, setEndDate] = useState<string>('')
   const [isAiLoading, setIsAiLoading] = useState(false)
   const [aiResponse, setAiResponse] = useState<{ text?: string; error?: string } | null>(null)
 
@@ -45,9 +47,19 @@ export default function PortfolioAnalytics({
       if (timeRange === 'YEAR') {
         return date.getFullYear() === now.getFullYear()
       }
+      if (timeRange === 'CUSTOM') {
+        if (startDate && endDate) {
+          const start = new Date(startDate)
+          start.setHours(0, 0, 0, 0)
+          const end = new Date(endDate)
+          end.setHours(23, 59, 59, 999)
+          return date >= start && date <= end
+        }
+        return true
+      }
       return true
     })
-  }, [transactions, timeRange])
+  }, [transactions, timeRange, startDate, endDate])
 
   // Calculate metrics
   const { totalIncome, totalExpense, totalCicilan } = useMemo(() => {
@@ -74,7 +86,10 @@ export default function PortfolioAnalytics({
   const handleAskAI = async () => {
     setIsAiLoading(true)
     setAiResponse(null)
-    const rangeLabel = timeRange === 'MONTH' ? 'Bulan Ini' : timeRange === 'YEAR' ? 'Tahun Ini' : 'Semua Waktu'
+    let rangeLabel = 'Semua Waktu'
+    if (timeRange === 'MONTH') rangeLabel = 'Bulan Ini'
+    if (timeRange === 'YEAR') rangeLabel = 'Tahun Ini'
+    if (timeRange === 'CUSTOM' && startDate && endDate) rangeLabel = `Dari ${startDate} ke ${endDate}`
     
     try {
       const res = await getFinancialAdvice(filteredTransactions, rangeLabel)
@@ -99,25 +114,48 @@ export default function PortfolioAnalytics({
           <p className="text-sm text-gray-400 mt-1">Pantau arus kas dan kesehatan finansial Anda</p>
         </div>
 
-        <div className="flex bg-[#111115] p-1 rounded-xl border border-white/10 w-fit">
-          <button
-            onClick={() => setTimeRange('MONTH')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${timeRange === 'MONTH' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-          >
-            Bulan Ini
-          </button>
-          <button
-            onClick={() => setTimeRange('YEAR')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${timeRange === 'YEAR' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-          >
-            Tahun Ini
-          </button>
-          <button
-            onClick={() => setTimeRange('ALL')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${timeRange === 'ALL' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-          >
-            Semua Waktu
-          </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex bg-[#111115] p-1 rounded-xl border border-white/10 w-fit">
+            <button
+              onClick={() => setTimeRange('MONTH')}
+              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${timeRange === 'MONTH' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            >
+              Bulan Ini
+            </button>
+            <button
+              onClick={() => setTimeRange('YEAR')}
+              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${timeRange === 'YEAR' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            >
+              Tahun Ini
+            </button>
+            <button
+              onClick={() => setTimeRange('CUSTOM')}
+              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${timeRange === 'CUSTOM' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+            >
+              Pilih Tanggal
+            </button>
+          </div>
+
+          {/* Custom Date Inputs */}
+          {timeRange === 'CUSTOM' && (
+            <div className="flex items-center gap-2 animate-in slide-in-from-top-2 fade-in duration-200">
+              <input 
+                type="date" 
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                className="bg-[#111115] border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-primary w-full color-scheme-dark" 
+                style={{ colorScheme: 'dark' }}
+              />
+              <span className="text-gray-500 text-xs font-medium">ke</span>
+              <input 
+                type="date" 
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="bg-[#111115] border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-primary w-full color-scheme-dark" 
+                style={{ colorScheme: 'dark' }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
