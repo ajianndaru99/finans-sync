@@ -24,7 +24,7 @@ export default async function DashboardLayout({
             FS
           </div>
           <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            Finans Sync
+            Ajian Family
           </h1>
         </div>
 
@@ -62,7 +62,7 @@ export default async function DashboardLayout({
         <header className="flex justify-between items-center mb-6 md:mb-8 glass-panel py-3 px-6 rounded-full sticky top-0 z-40 backdrop-blur-xl shadow-lg">
           <h2 className="text-lg font-medium text-gray-200 hidden md:block">Welcome back, <span className="text-primary font-semibold">{fullName}</span></h2>
           {/* Mobile Header */}
-          <div className="md:hidden font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Finans Sync</div>
+          <div className="md:hidden font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Ajian Family</div>
           
           <div className="flex items-center gap-4">
             <LogoutButton />

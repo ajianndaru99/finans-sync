@@ -13,14 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Finans Sync",
+  title: "Ajian Family",
   description: "Aplikasi pelacak keuangan otomatis",
   manifest: "/manifest.json",
   themeColor: "#059669",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Finans Sync",
+    title: "Ajian Family",
   },
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
 };

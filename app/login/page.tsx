@@ -89,7 +89,7 @@ export default function LoginPage() {
           {isLogin ? "Welcome Back" : "Create Account"}
         </h1>
         <p className="text-gray-400 text-center text-sm mb-8">
-          {isLogin ? "Sign in to access your Unified Ledger" : "Join Finans Sync today"}
+          {isLogin ? "Sign in to access your Unified Ledger" : "Join Ajian Family today"}
         </p>
         
         {message && (

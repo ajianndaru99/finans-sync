@@ -52,7 +52,7 @@ export default function BiometricLock({ children }: { children: React.ReactNode 
       await navigator.credentials.create({
         publicKey: {
           challenge,
-          rp: { name: "Finans Sync" },
+          rp: { name: "Ajian Family" },
           user: { id: userId, name: "local_user", displayName: "Local User" },
           pubKeyCredParams: [{ type: "public-key", alg: -7 }],
           authenticatorSelection: {
@@ -198,7 +198,7 @@ export default function BiometricLock({ children }: { children: React.ReactNode 
       </div>
       <h1 className="text-2xl font-bold mb-2 text-white">App Locked</h1>
       <p className="text-gray-400 text-center mb-10 max-w-xs text-sm">
-        Finans Sync terkunci demi keamanan data Anda.
+        Ajian Family terkunci demi keamanan data Anda.
       </p>
       <button
         onClick={unlockWithBiometric}

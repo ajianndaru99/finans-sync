@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finans-sync-v3';
+const CACHE_NAME = 'ajian-family-v1';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -51,7 +51,7 @@ self.addEventListener('push', (event) => {
       body: data.body,
       icon: data.icon || '/icon-192x192.png',
       badge: '/icon-192x192.png',
-      tag: data.tag || 'finans-sync',
+      tag: data.tag || 'ajian-family',
       renotify: true,
       data: data.data || {},
     })

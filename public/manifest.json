@@ -1,7 +1,7 @@
 {
-  "name": "Finans Sync",
-  "short_name": "FinansSync",
-  "description": "Aplikasi pelacak keuangan otomatis",
+  "name": "Ajian Family",
+  "short_name": "AjianFamily",
+  "description": "Aplikasi pelacak keuangan keluarga otomatis",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#000000",
