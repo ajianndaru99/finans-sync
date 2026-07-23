@@ -30,7 +30,7 @@ function parseBCA(text: string): ParsedTransaction | null {
   const creditMatch = text.match(/(?:dikredit|kredit|transfer\s*masuk|cr)[:\s]*Rp\s?([0-9.,]+)/i)
 
   // Fallback: "Rp X.XXX,XX" dengan konteks debet/kredit
-  const amountMatch = text.match(/Rp\s?([0-9.]+(?:,[0-9]{2})?)/i)
+  const amountMatch = text.match(/\bRp\s?([0-9.]+(?:,[0-9]{2})?)/i)
 
   if (debitMatch) {
     return { amount: parseRupiah(debitMatch[1]), type: 'DEBIT', description: extractBCADescription(text), bank: 'BCA' }
@@ -40,7 +40,7 @@ function parseBCA(text: string): ParsedTransaction | null {
   }
   // Fallback: coba deteksi dari kata "debet/kredit" dalam teks
   if (amountMatch) {
-    const isDebit = /debet|keluar|db\b/i.test(text)
+    const isDebit = /debet|keluar|\bdb\b/i.test(text)
     return { amount: parseRupiah(amountMatch[1]), type: isDebit ? 'DEBIT' : 'CREDIT', description: extractBCADescription(text), bank: 'BCA' }
   }
   return null
@@ -164,6 +164,110 @@ function parseBPDDIY(text: string): ParsedTransaction | null {
 }
 
 // ─────────────────────────────────────────────
+// PARSER: Bank BTN
+// ─────────────────────────────────────────────
+function parseBTN(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:kredit|masuk|setor|terima)/i.test(text)
+  const descMatch = text.match(/(?:keterangan|berita)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi BTN'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'BTN' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: FLIP
+// ─────────────────────────────────────────────
+function parseFlip(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:uang masuk|berhasil menerima|refund)/i.test(text)
+  const descMatch = text.match(/(?:dari|ke|berita|keterangan)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi Flip'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'Flip' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: ShopeePay
+// ─────────────────────────────────────────────
+function parseShopeePay(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:top up|berhasil diisi|menerima|cashback|refund)/i.test(text)
+  const descMatch = text.match(/(?:merchant|keterangan|ke|dari)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi ShopeePay'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'ShopeePay' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: DANA
+// ─────────────────────────────────────────────
+function parseDana(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:top up|isi saldo|menerima|uang masuk|cashback)/i.test(text)
+  const descMatch = text.match(/(?:pembayaran ke|keterangan|pesan)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi DANA'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'DANA' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: GoPay
+// ─────────────────────────────────────────────
+function parseGoPay(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:top up|isi saldo|cashback|terima|menerima)/i.test(text)
+  const descMatch = text.match(/(?:merchant|keterangan|untuk)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi GoPay'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'GoPay' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: OVO
+// ─────────────────────────────────────────────
+function parseOvo(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:top up|isi saldo|cashback|terima uang)/i.test(text)
+  const descMatch = text.match(/(?:merchant|keterangan|pesan)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi OVO'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'OVO' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: SeaBank
+// ─────────────────────────────────────────────
+function parseSeaBank(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:uang masuk|berhasil menerima|terima|kredit)/i.test(text)
+  const descMatch = text.match(/(?:dari|ke|berita|keterangan)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi SeaBank'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'SeaBank' }
+}
+
+// ─────────────────────────────────────────────
+// PARSER: AstraPay
+// ─────────────────────────────────────────────
+function parseAstraPay(text: string): ParsedTransaction | null {
+  const amountMatch = text.match(/(?:Rp|IDR)\s*([0-9.,]+)/i)
+  if (!amountMatch) return null
+  const amount = parseRupiah(amountMatch[1])
+  const isCredit = /(?:top up|isi saldo|cashback|menerima)/i.test(text)
+  const descMatch = text.match(/(?:merchant|keterangan|pesan)[:\s]+([^\n\r|<]+)/i)
+  const description = descMatch ? descMatch[1].trim().substring(0, 100) : 'Transaksi AstraPay'
+  return { amount, type: isCredit ? 'CREDIT' : 'DEBIT', description, bank: 'AstraPay' }
+}
+
+// ─────────────────────────────────────────────
 // PARSER UTAMA: Deteksi bank dari pengirim/konten
 // ─────────────────────────────────────────────
 export class GenericBankParser {
@@ -173,7 +277,7 @@ export class GenericBankParser {
 
     const sender = (senderEmail || '').toLowerCase()
 
-    // Deteksi berdasarkan email pengirim (paling akurat)
+    // Deteksi berdasarkan email pengirim (Hanya menerima pengirim resmi)
     if (sender.includes('klikbca') || sender.includes('bca.co.id')) {
       const result = parseBCA(text)
       if (result) return result
@@ -194,6 +298,11 @@ export class GenericBankParser {
       if (result) return result
     }
 
+    if (sender.includes('btn.co.id') || sender.includes('@btn')) {
+      const result = parseBTN(text)
+      if (result) return result
+    }
+
     if (sender.includes('jago.com') || sender.includes('@jago')) {
       const result = parseJago(text)
       if (result) return result
@@ -204,29 +313,42 @@ export class GenericBankParser {
       if (result) return result
     }
 
-    // Fallback: coba semua parser berurutan
-    return (
-      parseBCA(text) ||
-      parseMandiri(text) ||
-      parseBRI(text) ||
-      parseBNI(text) ||
-      parseJago(text) ||
-      parseBPDDIY(text) ||
-      // Last resort: cari pola "Rp X" apapun
-      (() => {
-        const m = text.match(/Rp\s?([0-9.,]+)/i)
-        if (m) {
-          const isDebit = /(?:debet|keluar|pembayaran|pembelian)/i.test(text)
-          return {
-            amount: parseRupiah(m[1]),
-            type: isDebit ? 'DEBIT' : 'CREDIT' as 'DEBIT' | 'CREDIT',
-            description: 'Transaksi Bank',
-            bank: 'Unknown'
-          }
-        }
-        throw new Error('Format email tidak dikenali sebagai notifikasi bank')
-      })()
-    )
+    if (sender.includes('flip.id') || sender.includes('@flip')) {
+      const result = parseFlip(text)
+      if (result) return result
+    }
+
+    if (sender.includes('shopee.co.id') || sender.includes('shopeepay')) {
+      const result = parseShopeePay(text)
+      if (result) return result
+    }
+
+    if (sender.includes('dana.id') || sender.includes('@dana')) {
+      const result = parseDana(text)
+      if (result) return result
+    }
+
+    if (sender.includes('gojek.com') || sender.includes('@gojek')) {
+      const result = parseGoPay(text)
+      if (result) return result
+    }
+
+    if (sender.includes('ovo.id') || sender.includes('@ovo')) {
+      const result = parseOvo(text)
+      if (result) return result
+    }
+
+    if (sender.includes('seabank.co.id') || sender.includes('@seabank')) {
+      const result = parseSeaBank(text)
+      if (result) return result
+    }
+
+    if (sender.includes('astrapay.com') || sender.includes('@astrapay')) {
+      const result = parseAstraPay(text)
+      if (result) return result
+    }
+
+    throw new Error('Format email atau pengirim tidak dikenali sebagai notifikasi bank/e-wallet resmi')
   }
 }
 

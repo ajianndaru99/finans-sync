@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { encrypt } from '@/app/lib/utils/crypto'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -24,8 +25,8 @@ export async function GET(request: Request) {
         .upsert({
           user_id: user.id,
           email_address: user.email,
-          encrypted_access_token: provider_token || 'MISSING_PROVIDER_TOKEN',
-          encrypted_refresh_token: provider_refresh_token || '',
+          encrypted_access_token: encrypt(provider_token || 'MISSING_PROVIDER_TOKEN'),
+          encrypted_refresh_token: encrypt(provider_refresh_token || ''),
           history_id: '0'
         }, { onConflict: 'user_id' })
 

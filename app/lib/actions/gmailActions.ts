@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { google } from 'googleapis'
+import { decrypt } from '@/app/lib/utils/crypto'
 
 export async function enableGmailWatch() {
   const supabase = await createClient()
@@ -27,8 +28,8 @@ export async function enableGmailWatch() {
     )
 
     oauth2Client.setCredentials({
-      access_token: tokens.encrypted_access_token,
-      refresh_token: tokens.encrypted_refresh_token
+      access_token: decrypt(tokens.encrypted_access_token),
+      refresh_token: decrypt(tokens.encrypted_refresh_token)
     })
 
     const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
