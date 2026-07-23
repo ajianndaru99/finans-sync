@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ajian-family-v1';
+const CACHE_NAME = 'ajian-family-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

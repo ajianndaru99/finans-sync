@@ -17,7 +17,7 @@ export default function LinkAccountButton() {
         provider: 'google',
         options: {
           scopes: 'https://www.googleapis.com/auth/gmail.readonly email profile',
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/settings`
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       })
       if (error) throw error
