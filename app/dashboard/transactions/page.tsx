@@ -1,9 +1,13 @@
-import { getTransactions } from '@/app/lib/services/financeService'
+import { getAccounts, getTransactions } from '@/app/lib/services/financeService'
+import NewEntryButton from '@/app/components/NewEntryButton'
 
 export default async function TransactionsPage() {
   let transactions: any[] = []
+  let accounts: any[] = []
+
   try {
-    transactions = await getTransactions(50) // Fetch up to 50 for the page
+    transactions = await getTransactions(50)
+    accounts = await getAccounts()
   } catch (e) {
     console.error("Failed to fetch transactions")
   }
@@ -16,65 +20,79 @@ export default async function TransactionsPage() {
     }).format(amount)
   }
 
-  return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      <header className="flex justify-between items-end mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-100">All Transactions</h1>
-          <p className="text-gray-400 mt-1">Review your financial history across all accounts.</p>
-        </div>
-        <button className="px-5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium transition-colors shadow-lg shadow-primary/20">
-          + New Entry
-        </button>
-      </header>
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    })
+  }
 
-      <div className="glass-panel overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-gray-500 bg-white/5">
-              <th className="p-4 font-medium">Date</th>
-              <th className="p-4 font-medium">Description</th>
-              <th className="p-4 font-medium">Account</th>
-              <th className="p-4 font-medium text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {transactions.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="p-8 text-center text-gray-500">
-                  No transactions found.
-                </td>
-              </tr>
-            ) : (
-              transactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
-                  <td className="p-4 text-sm text-gray-400">
-                    {new Date(tx.created_at).toLocaleDateString('id-ID', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </td>
-                  <td className="p-4">
-                    <p className="font-medium text-gray-200 group-hover:text-primary transition-colors">
-                      {tx.description || 'System Entry'}
-                    </p>
-                    <p className="text-xs text-gray-500">{tx.categories?.name || 'Uncategorized'}</p>
-                  </td>
-                  <td className="p-4 text-sm text-gray-400">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10">
-                      {tx.accounts?.name || 'Unknown'}
-                    </span>
-                  </td>
-                  <td className={`p-4 text-right font-medium ${tx.type === 'CREDIT' ? 'text-primary' : 'text-gray-200'}`}>
-                    {tx.type === 'CREDIT' ? '+' : '-'}{formatIDR(Number(tx.amount))}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+  return (
+    <div className="space-y-5 pb-4">
+      {/* Header */}
+      <div className="flex justify-between items-center gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-100">Transactions</h1>
+          <p className="text-gray-400 text-xs mt-0.5 hidden md:block">Riwayat semua transaksi keuangan Anda</p>
+        </div>
+        <NewEntryButton accounts={accounts} />
       </div>
+
+      {/* Transaction List (Card-based, mobile-first) */}
+      {transactions.length === 0 ? (
+        <div className="glass-panel p-10 text-center text-gray-500">
+          <div className="text-4xl mb-3">💸</div>
+          <p className="font-medium">Belum ada transaksi</p>
+          <p className="text-sm mt-1">Transaksi otomatis akan muncul di sini saat email bank masuk</p>
+        </div>
+      ) : (
+        <div className="glass-panel overflow-hidden divide-y divide-white/5">
+          {transactions.map((tx) => (
+            <div key={tx.id} className="flex items-center gap-3 p-4 hover:bg-white/5 active:bg-white/10 transition-colors">
+              {/* Ikon */}
+              <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center font-bold text-base ${
+                tx.type === 'CREDIT'
+                  ? 'bg-primary/15 text-primary border border-primary/20'
+                  : 'bg-red-500/15 text-red-400 border border-red-500/20'
+              }`}>
+                {tx.type === 'CREDIT' ? '↓' : '↑'}
+              </div>
+
+              {/* Info tengah */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-100 line-clamp-1">
+                  {tx.description || 'System Entry'}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span className="text-xs text-gray-500">{formatDate(tx.created_at)}</span>
+                  {tx.accounts?.name && (
+                    <>
+                      <span className="text-gray-700 text-xs">•</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded-md bg-white/5 border border-white/8 text-gray-400">
+                        {tx.accounts.name}
+                      </span>
+                    </>
+                  )}
+                  {tx.categories?.name && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary/80">
+                      {tx.categories.name}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Jumlah */}
+              <div className={`text-sm font-bold tabular-nums shrink-0 ${
+                tx.type === 'CREDIT' ? 'text-primary' : 'text-gray-200'
+              }`}>
+                {tx.type === 'CREDIT' ? '+' : '-'}
+                {formatIDR(Number(tx.amount))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
