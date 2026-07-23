@@ -2,7 +2,7 @@ import { getAccounts, getTransactions } from '@/app/lib/services/financeService'
 import Link from 'next/link'
 import AddAccountModal from '@/app/components/AddAccountModal'
 import NewEntryButton from '@/app/components/NewEntryButton'
-import EnableSyncButton from '@/app/components/EnableSyncButton'
+import AutoSyncManager from '@/app/components/AutoSyncManager'
 
 export default async function DashboardPage() {
   let accounts: any[] = []
@@ -39,14 +39,19 @@ export default async function DashboardPage() {
       <section className="glass-card p-5 md:p-8 relative overflow-hidden rounded-2xl">
         <div className="absolute top-0 right-0 p-32 bg-primary/10 rounded-full blur-[100px] -mr-16 -mt-16 pointer-events-none"></div>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10 gap-4">
-          <div className="min-w-0 w-full">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5">Total Net Worth</p>
+          <div className="min-w-0 w-full flex items-center justify-between md:justify-start md:gap-4 mb-2">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Net Worth</p>
+            <div className="md:hidden">
+              <AutoSyncManager />
+            </div>
+          </div>
+          <div className="min-w-0 w-full flex justify-between items-center">
             <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-400 truncate">
               {formatIDR(netWorth)}
             </h2>
-          </div>
-          <div className="shrink-0 w-full md:w-auto mt-2 md:mt-0">
-            <EnableSyncButton />
+            <div className="hidden md:block">
+              <AutoSyncManager />
+            </div>
           </div>
         </div>
         <div className="mt-6 flex flex-wrap gap-3 relative z-10">
