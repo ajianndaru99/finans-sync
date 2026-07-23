@@ -10,59 +10,66 @@ export async function enableGmailWatch() {
 
   if (!user) return { error: 'Unauthorized' }
 
-  // Ambil token dari database
-  const { data: tokens, error: dbError } = await supabase
+  // Ambil SEMUA token dari database untuk user ini
+  const { data: tokenList, error: dbError } = await supabase
     .from('user_oauth_tokens')
     .select('*')
     .eq('user_id', user.id)
-    .single()
 
-  if (dbError || !tokens?.encrypted_access_token) {
-    return { error: 'Belum menghubungkan akun Google (Token tidak ditemukan). Silakan login ulang via Google.' }
+  if (dbError || !tokenList || tokenList.length === 0) {
+    return { error: 'Belum menghubungkan akun Google (Token tidak ditemukan). Silakan login ulang via Google atau tambah Integrasi.' }
   }
 
-  try {
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GCP_CLIENT_ID,
-      process.env.GCP_CLIENT_SECRET
-    )
+  let successCount = 0
+  let lastError = ''
 
-    oauth2Client.setCredentials({
-      access_token: decrypt(tokens.encrypted_access_token),
-      refresh_token: decrypt(tokens.encrypted_refresh_token)
-    })
+  for (const tokens of tokenList) {
+    try {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GCP_CLIENT_ID,
+        process.env.GCP_CLIENT_SECRET
+      )
 
-    const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+      oauth2Client.setCredentials({
+        access_token: decrypt(tokens.encrypted_access_token),
+        refresh_token: decrypt(tokens.encrypted_refresh_token)
+      })
 
-    let topicName = process.env.GCP_PUBSUB_TOPIC || ''
-    if (!topicName.startsWith('projects/')) {
-      topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${topicName}`
-    }
-    
-    // Memanggil Watch API untuk mengirim notifikasi ke Pub/Sub
-    const res = await gmail.users.watch({
-      userId: 'me',
-      requestBody: {
-        labelIds: ['INBOX'], // pantau inbox
-        topicName: topicName,
+      const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+
+      let topicName = process.env.GCP_PUBSUB_TOPIC || ''
+      if (!topicName.startsWith('projects/')) {
+        topicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${topicName}`
       }
-    })
+      
+      // Memanggil Watch API untuk mengirim notifikasi ke Pub/Sub
+      const res = await gmail.users.watch({
+        userId: 'me',
+        requestBody: {
+          labelIds: ['INBOX'], // pantau inbox
+          topicName: topicName,
+        }
+      })
 
-    // Simpan historyId baru
-    if (res.data.historyId) {
-      await supabase
-        .from('user_oauth_tokens')
-        .update({ history_id: res.data.historyId })
-        .eq('user_id', user.id)
-    }
+      // Simpan historyId baru khusus untuk email ini
+      if (res.data.historyId) {
+        await supabase
+          .from('user_oauth_tokens')
+          .update({ history_id: res.data.historyId })
+          .eq('user_id', user.id)
+          .eq('email_address', tokens.email_address)
+      }
 
-    return { success: true, historyId: res.data.historyId }
-  } catch (error: any) {
-    console.error('Gmail Watch Error:', error)
-    let errorTopicName = process.env.GCP_PUBSUB_TOPIC || ''
-    if (!errorTopicName.startsWith('projects/')) {
-      errorTopicName = `projects/${process.env.GCP_PROJECT_ID}/topics/${errorTopicName}`
+      successCount++
+    } catch (error: any) {
+      console.error(`Gmail Watch Error for ${tokens.email_address}:`, error)
+      lastError = error.message
     }
-    return { error: `${error.message} (Dikirim: ${errorTopicName}). Cek spasi ekstra di Env Vars.` }
   }
+
+  if (successCount === 0 && lastError) {
+    return { error: `Gagal mengaktifkan sinkronisasi: ${lastError}` }
+  }
+
+  return { success: true, count: successCount }
 }
