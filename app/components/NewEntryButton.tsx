@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useActionState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { createTransaction } from '@/app/lib/actions/financeActions'
 
 interface Account {
@@ -38,6 +39,11 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
     }
   }
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <>
       <button
@@ -50,14 +56,14 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
         <span>Tambah Transaksi</span>
       </button>
 
-      {/* Modal Backdrop */}
-      {isOpen && (
+      {/* Modal Backdrop with Portal */}
+      {mounted && isOpen && createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false) }}
         >
           {/* Modal Centered */}
-          <div className="w-full max-w-md glass-card border border-white/10 rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-md bg-[#0e0e11] border border-white/10 rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
 
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-bold text-white">Tambah Transaksi</h3>
@@ -165,7 +171,8 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
               </button>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

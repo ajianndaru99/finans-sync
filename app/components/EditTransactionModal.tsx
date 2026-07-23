@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useActionState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { updateTransaction, deleteTransaction } from '@/app/lib/actions/financeActions'
 
 interface Account {
@@ -69,14 +70,19 @@ export default function EditTransactionModal({
   // Format the default datetime-local value (YYYY-MM-DDTHH:mm)
   const defaultDate = transaction.created_at ? new Date(transaction.created_at).toISOString().slice(0, 16) : ''
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   if (!isOpen) return null
 
-  return (
+  return mounted ? createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="w-full max-w-md glass-card border border-white/10 rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto relative">
+      <div className="w-full max-w-md bg-[#0e0e11] border border-white/10 rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto relative">
         <div className="flex justify-between items-center mb-5">
           <h3 className="text-lg font-bold text-white">Edit Transaksi</h3>
           <div className="flex items-center gap-2">
@@ -195,6 +201,7 @@ export default function EditTransactionModal({
           </button>
         </form>
       </div>
-    </div>
-  )
+    </div>,
+    document.body
+  ) : null
 }

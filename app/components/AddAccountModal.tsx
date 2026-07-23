@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useActionState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { createAccount } from '@/app/lib/actions/financeActions'
 
 export default function AddAccountModal() {
@@ -15,6 +16,11 @@ export default function AddAccountModal() {
     }
   }, [state])
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <>
       <button 
@@ -24,9 +30,9 @@ export default function AddAccountModal() {
         + Add Account
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md glass-card p-6 border border-white/10 relative">
+      {mounted && isOpen && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90">
+          <div className="w-full max-w-md bg-[#0e0e11] p-6 rounded-2xl border border-white/10 relative shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <button 
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -62,7 +68,6 @@ export default function AddAccountModal() {
                   <option value="BANK">Bank</option>
                   <option value="EWALLET">E-Wallet</option>
                   <option value="CASH">Cash</option>
-                  <option value="INVESTMENT">Investment</option>
                 </select>
               </div>
               <div>
@@ -85,7 +90,8 @@ export default function AddAccountModal() {
               </button>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
