@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ajian Family",
   description: "Aplikasi pelacak keuangan otomatis",
-  manifest: "/manifest.json",
+  manifest: "/manifest.json?v=2",
   themeColor: "#059669",
   appleWebApp: {
     capable: true,

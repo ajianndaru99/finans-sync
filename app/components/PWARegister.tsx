@@ -7,7 +7,7 @@ export default function PWARegister() {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try {
-          const registration = await navigator.serviceWorker.register("/sw.js");
+          const registration = await navigator.serviceWorker.register("/sw.js?v=2");
           console.log("Service Worker registered, scope:", registration.scope);
 
           // Minta izin push notification
