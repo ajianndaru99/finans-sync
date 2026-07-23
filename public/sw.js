@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finans-sync-v2';
+const CACHE_NAME = 'finans-sync-v3';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -18,20 +18,23 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Network First strategy
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  if (event.request.url.includes('/api/')) return; // Skip API calls
+  
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) return response;
-      return fetch(event.request).then((networkResponse) => {
-        if (!event.request.url.includes('/api/') && event.request.method === 'GET') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
+    fetch(event.request)
+      .then((networkResponse) => {
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
         return networkResponse;
-      });
-    }).catch(() => {})
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
 

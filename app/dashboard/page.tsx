@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         <div className="flex justify-between items-start relative z-10 gap-3">
           <div className="min-w-0">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1.5">Total Net Worth</p>
-            <h2 className="text-3xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-400 truncate">
+            <h2 className="text-2xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-400 truncate">
               {formatIDR(netWorth)}
             </h2>
           </div>

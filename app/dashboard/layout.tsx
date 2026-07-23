@@ -63,7 +63,7 @@ export default async function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col relative overflow-y-auto overflow-x-hidden p-4 md:p-8 pb-24 md:pb-8">
-        <header className="flex justify-between items-center mb-6 md:mb-8 glass-panel py-3 px-6 rounded-full sticky top-0 z-10 backdrop-blur-xl">
+        <header className="flex justify-between items-center mb-6 md:mb-8 glass-panel py-3 px-6 rounded-full sticky top-0 z-40 backdrop-blur-xl shadow-lg">
           <h2 className="text-lg font-medium text-gray-200 hidden md:block">Welcome back, <span className="text-primary font-semibold">{fullName}</span></h2>
           {/* Mobile Header */}
           <div className="md:hidden font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Finans Sync</div>
