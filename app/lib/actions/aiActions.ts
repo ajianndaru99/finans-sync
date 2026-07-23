@@ -23,23 +23,31 @@ export async function getFinancialAdvice(transactions: any[], timeRangeLabel: st
     }).join('\n')
 
     const prompt = `
-Kamu adalah penasihat keuangan pribadi yang cerdas, santai, dan blak-blakan.
-Berikut adalah rangkuman keuangan pengguna untuk periode: ${timeRangeLabel}
+Peran: Kamu adalah Akuntan Senior dan Perencana Keuangan (Financial Planner) profesional.
+Berikut adalah data arus kas klien untuk periode: ${timeRangeLabel}
 
 Total Pemasukan: Rp ${totalIncome}
 Total Pengeluaran: Rp ${totalExpense}
 Sisa (Net Flow): Rp ${totalIncome - totalExpense}
 Total Beban Cicilan: Rp ${totalCicilan}
 
-Rincian Transaksi Terakhir:
+Rincian Transaksi Terakhir (sebagai referensi pola pengeluaran):
 ${summaryList}
 
 Tugasmu:
-1. Berikan analisa singkat (maksimal 3 paragraf pendek) tentang kondisi keuangan ini.
-2. Jika pengeluaran lebih besar dari pemasukan, berikan peringatan keras tapi supportif.
-3. Jika cicilan terlalu besar (misal lebih dari 30% pemasukan), ingatkan tentang bahaya hutang.
-4. Jika sehat, berikan pujian dan saran untuk menabung/investasi.
-Gunakan bahasa Indonesia santai yang mudah dimengerti (bisa pakai emoji). Jangan bertele-tele.
+Fokuslah memberikan wawasan (insight) tingkat lanjut berdasarkan data periode di atas. Jangan sekadar mengulang angka, tapi berikan makna dari angka tersebut.
+Format balasanmu HANYA menggunakan Markdown berikut:
+
+**📊 Diagnosa Keuangan:**
+(Satu paragraf evaluasi profesional mengenai kesehatan rasio pemasukan, pengeluaran, dan beban cicilan klien pada periode ini).
+
+**💡 Saran Optimalisasi:**
+(Berikan 2-3 poin evaluasi pengeluaran. Area mana yang boros berdasarkan rincian transaksi? Apa yang harus dipertahankan?).
+
+**🚀 Planning Kedepan (Action Plan):**
+(Berikan 2-3 langkah nyata perencanaan keuangan untuk bulan/periode berikutnya. Misalnya strategi alokasi dana, pelunasan utang, atau instrumen investasi).
+
+Gaya Bahasa: Profesional, objektif, solutif, layaknya akuntan senior. Gunakan bahasa Indonesia yang baku namun mudah dicerna (gunakan bullet points).
 `
 
     let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
