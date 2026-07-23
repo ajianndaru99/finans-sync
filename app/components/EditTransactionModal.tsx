@@ -118,19 +118,25 @@ export default function EditTransactionModal({
           {/* Tipe */}
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Tipe Transaksi</label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {[
                 { value: 'CREDIT', label: 'Masuk', emoji: '📥', color: 'peer-checked:bg-primary/20 peer-checked:border-primary/50 peer-checked:text-primary' },
                 { value: 'DEBIT', label: 'Keluar', emoji: '📤', color: 'peer-checked:bg-red-500/20 peer-checked:border-red-500/50 peer-checked:text-red-400' },
-              ].map((opt, i) => (
-                <label key={i} className="cursor-pointer">
-                  <input type="radio" name="type" value={opt.value} defaultChecked={transaction.type === opt.value} className="peer sr-only" required />
-                  <div className={`text-center py-2.5 px-1 rounded-xl border border-white/10 text-gray-400 text-xs font-medium ${opt.color} transition-all`}>
-                    <div className="text-base mb-0.5">{opt.emoji}</div>
-                    {opt.label}
-                  </div>
-                </label>
-              ))}
+                { value: 'CICILAN', label: 'Cicilan', emoji: '📋', color: 'peer-checked:bg-orange-500/20 peer-checked:border-orange-500/50 peer-checked:text-orange-400' },
+              ].map((opt, i) => {
+                // Determine if this should be checked. If description contains [Cicilan], it's a CICILAN.
+                const isCicilan = transaction.description?.includes('[Cicilan]');
+                const isChecked = opt.value === 'CICILAN' ? isCicilan : (!isCicilan && transaction.type === opt.value);
+                return (
+                  <label key={i} className="cursor-pointer">
+                    <input type="radio" name="type" value={opt.value} defaultChecked={isChecked} className="peer sr-only" required />
+                    <div className={`text-center py-2.5 px-1 rounded-xl border border-white/10 text-gray-400 text-xs font-medium ${opt.color} transition-all`}>
+                      <div className="text-base mb-0.5">{opt.emoji}</div>
+                      {opt.label}
+                    </div>
+                  </label>
+                )
+              })}
             </div>
           </div>
 
@@ -186,7 +192,7 @@ export default function EditTransactionModal({
             <input
               type="text"
               name="description"
-              defaultValue={transaction.description}
+              defaultValue={transaction.description?.replace('[Cicilan]', '').trim()}
               placeholder="contoh: Makan siang, Gaji..."
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-gray-100 outline-none text-sm"
             />

@@ -1,13 +1,14 @@
 import { getAccounts, getTransactions } from '@/app/lib/services/financeService'
 import NewEntryButton from '@/app/components/NewEntryButton'
-import TransactionList from '@/app/components/TransactionList'
+import PortfolioAnalytics from '@/app/components/PortfolioAnalytics'
 
 export default async function TransactionsPage() {
   let transactions: any[] = []
   let accounts: any[] = []
 
   try {
-    transactions = await getTransactions(50)
+    // Ambil lebih banyak transaksi agar analitik tahunan bisa bekerja
+    transactions = await getTransactions(1000)
     accounts = await getAccounts()
   } catch (e) {
     console.error("Failed to fetch transactions")
@@ -15,17 +16,12 @@ export default async function TransactionsPage() {
 
   return (
     <div className="space-y-5 pb-4">
-      {/* Header */}
-      <div className="flex justify-between items-center gap-3">
-        <div className="min-w-0">
-          <h1 className="text-xl md:text-3xl font-bold text-gray-100">Transactions</h1>
-          <p className="text-gray-400 text-xs mt-0.5 hidden md:block">Riwayat semua transaksi keuangan Anda</p>
-        </div>
+      {/* Tombol tambah transaksi dipindah ke atas tapi Header teks akan diatur oleh PortfolioAnalytics */}
+      <div className="flex justify-end mb-4">
         <NewEntryButton accounts={accounts} />
       </div>
 
-      {/* Transaction List (Client Component with Edit Modal) */}
-      <TransactionList transactions={transactions} accounts={accounts} />
+      <PortfolioAnalytics transactions={transactions} accounts={accounts} />
     </div>
   )
 }

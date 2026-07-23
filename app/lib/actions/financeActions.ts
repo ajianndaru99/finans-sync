@@ -42,12 +42,22 @@ export async function createTransaction(prevState: any, formData: FormData) {
   const description = formData.get('description') as string
   const created_at = formData.get('created_at') as string
 
+  let finalType = type
+  let finalDescription = description
+
+  if (type === 'CICILAN') {
+    finalType = 'DEBIT'
+    if (!description.includes('[Cicilan]')) {
+      finalDescription = `[Cicilan] ${description}`.trim()
+    }
+  }
+
   const insertData: any = {
     user_id: user.id,
     account_id,
-    type,
+    type: finalType,
     amount,
-    description
+    description: finalDescription
   }
 
   if (category_id && category_id !== '') {
@@ -82,11 +92,24 @@ export async function updateTransaction(prevState: any, formData: FormData) {
   const description = formData.get('description') as string
   const created_at = formData.get('created_at') as string
 
+  let finalType = type
+  let finalDescription = description
+
+  if (type === 'CICILAN') {
+    finalType = 'DEBIT'
+    if (!description.includes('[Cicilan]')) {
+      finalDescription = `[Cicilan] ${description}`.trim()
+    }
+  } else {
+    // If it was changed from Cicilan to something else, remove the tag if present
+    finalDescription = description.replace('[Cicilan]', '').trim()
+  }
+
   const updateData: any = {
     account_id,
-    type,
+    type: finalType,
     amount,
-    description
+    description: finalDescription
   }
 
   if (created_at && created_at !== '') {

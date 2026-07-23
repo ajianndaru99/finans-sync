@@ -35,7 +35,7 @@ export default async function DashboardLayout({
           </Link>
           <Link href="/dashboard/transactions" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors group">
             <span className="w-2 h-2 rounded-full bg-accent mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            Transactions
+            Portfolio
           </Link>
         </nav>
 
@@ -92,7 +92,7 @@ export default async function DashboardLayout({
         </Link>
         <Link href="/dashboard/transactions" className="flex flex-col items-center p-2 text-gray-400 hover:text-accent transition-colors">
           <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-          <span className="text-[10px] font-medium">Txns</span>
+          <span className="text-[10px] font-medium">Portfolio</span>
         </Link>
       </nav>
     </div>

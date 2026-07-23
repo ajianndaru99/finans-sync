@@ -90,7 +90,7 @@ export default function NewEntryButton({ accounts }: { accounts: Account[] }) {
                   {[
                     { value: 'CREDIT', label: 'Masuk', emoji: '📥', color: 'peer-checked:bg-primary/20 peer-checked:border-primary/50 peer-checked:text-primary' },
                     { value: 'DEBIT', label: 'Keluar', emoji: '📤', color: 'peer-checked:bg-red-500/20 peer-checked:border-red-500/50 peer-checked:text-red-400' },
-                    { value: 'DEBIT', label: 'Cicilan', emoji: '📋', color: 'peer-checked:bg-orange-500/20 peer-checked:border-orange-500/50 peer-checked:text-orange-400' },
+                    { value: 'CICILAN', label: 'Cicilan', emoji: '📋', color: 'peer-checked:bg-orange-500/20 peer-checked:border-orange-500/50 peer-checked:text-orange-400' },
                   ].map((opt, i) => (
                     <label key={i} className="cursor-pointer">
                       <input type="radio" name="type" value={opt.value} className="peer sr-only" required />
