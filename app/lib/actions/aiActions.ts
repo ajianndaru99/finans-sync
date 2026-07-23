@@ -42,7 +42,7 @@ Tugasmu:
 Gunakan bahasa Indonesia santai yang mudah dimengerti (bisa pakai emoji). Jangan bertele-tele.
 `
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -54,7 +54,47 @@ Gunakan bahasa Indonesia santai yang mudah dimengerti (bisa pakai emoji). Jangan
       })
     })
 
-    const data = await response.json()
+    let data = await response.json()
+
+    // If the model is not found or not supported, try to automatically find a working model
+    if (!response.ok && data.error?.message?.includes('not found')) {
+      const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`)
+      const modelsData = await modelsRes.json()
+      
+      if (modelsData.models) {
+        // Find the first model that supports generateContent (preferring flash or pro)
+        let validModel = modelsData.models.find((m: any) => 
+          m.supportedGenerationMethods?.includes('generateContent') && 
+          m.name.includes('gemini-1.5-flash')
+        )
+
+        if (!validModel) {
+          validModel = modelsData.models.find((m: any) => 
+            m.supportedGenerationMethods?.includes('generateContent') && 
+            m.name.includes('gemini-1.5-pro')
+          )
+        }
+
+        if (!validModel) {
+          validModel = modelsData.models.find((m: any) => 
+            m.supportedGenerationMethods?.includes('generateContent') && 
+            m.name.includes('gemini') && !m.name.includes('vision') && !m.name.includes('embedding')
+          )
+        }
+
+        if (validModel) {
+          // Retry with the found valid model (name already includes "models/")
+          response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${validModel.name}:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          })
+          data = await response.json()
+        }
+      }
+    }
 
     if (!response.ok) {
       throw new Error(data.error?.message || 'Gagal menghubungi Gemini API')
