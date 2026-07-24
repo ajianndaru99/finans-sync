@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS public.user_oauth_tokens (
     UNIQUE(user_id, email_address)
 );
 
+-- Pastikan kolom created_at dan updated_at ada di tabel jika sebelumnya dibuat tanpa kolom tersebut
+ALTER TABLE public.user_oauth_tokens ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE public.user_oauth_tokens ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
 -- LANGKAH 2: Jika tabel SUDAH ADA dengan constraint lama (UNIQUE email_address saja),
 -- jalankan blok ini untuk MIGRASI constraint lama ke yang baru.
 -- (Jika sudah CREATE di atas, skip bagian ini)

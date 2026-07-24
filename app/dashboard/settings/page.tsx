@@ -24,11 +24,28 @@ export default async function SettingsPage({
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  const { data: linkedAccounts, error: fetchError } = await dbClient
+  let linkedAccounts: { email_address: string; created_at?: string }[] | null = null
+  let fetchError: any = null
+
+  // Coba query dengan created_at
+  const res = await dbClient
     .from('user_oauth_tokens')
     .select('email_address, created_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: true })
+
+  if (res.error && res.error.message?.includes('created_at')) {
+    // Fallback jika kolom created_at belum dibuat di tabel Supabase
+    const fallbackRes = await dbClient
+      .from('user_oauth_tokens')
+      .select('email_address')
+      .eq('user_id', user.id)
+    linkedAccounts = fallbackRes.data
+    fetchError = fallbackRes.error
+  } else {
+    linkedAccounts = res.data
+    fetchError = res.error
+  }
 
   return (
     <div className="space-y-4 pb-6">
@@ -107,9 +124,11 @@ export default async function SettingsPage({
                   <p className="text-white text-sm font-medium truncate">{acc.email_address}</p>
                   <p className="text-gray-500 text-[11px]">
                     {i === 0 ? '🔑 Utama · ' : ''}
-                    Sejak {new Date(acc.created_at).toLocaleDateString('id-ID', {
-                      day: 'numeric', month: 'short', year: 'numeric',
-                    })}
+                    {acc.created_at
+                      ? `Sejak ${new Date(acc.created_at).toLocaleDateString('id-ID', {
+                          day: 'numeric', month: 'short', year: 'numeric',
+                        })}`
+                      : 'Terhubung'}
                   </p>
                 </div>
                 {/* Indikator aktif */}
