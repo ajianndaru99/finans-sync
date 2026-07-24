@@ -3,6 +3,9 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import LinkAccountButton from '@/app/components/LinkAccountButton'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function SettingsPage({
   searchParams,
 }: {

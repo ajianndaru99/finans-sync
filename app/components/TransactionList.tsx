@@ -6,6 +6,7 @@ import EditTransactionModal from './EditTransactionModal'
 export default function TransactionList({ transactions, accounts, showTypeFilter = false }: { transactions: any[], accounts: any[], showTypeFilter?: boolean }) {
   const [editingTx, setEditingTx] = useState<any>(null)
   const [filterType, setFilterType] = useState<'ALL' | 'CREDIT' | 'DEBIT' | 'CICILAN'>('ALL')
+  const [deletedTxIds, setDeletedTxIds] = useState<string[]>([])
 
   const formatIDR = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -27,7 +28,10 @@ export default function TransactionList({ transactions, accounts, showTypeFilter
     })
   }
 
-  const filteredTransactions = transactions.filter(tx => {
+  // Filter out deleted transactions instantly (0ms UI feedback)
+  const activeTransactions = transactions.filter(tx => !deletedTxIds.includes(tx.id))
+
+  const filteredTransactions = activeTransactions.filter(tx => {
     if (filterType === 'ALL') return true
     if (filterType === 'CREDIT') return tx.type === 'CREDIT'
     if (filterType === 'DEBIT') return tx.type === 'DEBIT' && !tx.description?.includes('[Cicilan]')
@@ -35,7 +39,7 @@ export default function TransactionList({ transactions, accounts, showTypeFilter
     return true
   })
 
-  if (transactions.length === 0) {
+  if (activeTransactions.length === 0) {
     return (
       <div className="glass-panel p-10 text-center text-gray-500">
         <div className="text-4xl mb-3">💸</div>
@@ -137,7 +141,12 @@ export default function TransactionList({ transactions, accounts, showTypeFilter
           transaction={editingTx}
           accounts={accounts}
           isOpen={!!editingTx}
-          onClose={() => setEditingTx(null)}
+          onClose={(deletedId?: string) => {
+            if (deletedId) {
+              setDeletedTxIds(prev => [...prev, deletedId])
+            }
+            setEditingTx(null)
+          }}
         />
       )}
     </>

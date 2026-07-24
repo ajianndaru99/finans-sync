@@ -29,7 +29,7 @@ export default function EditTransactionModal({
   transaction: Transaction
   accounts: Account[]
   isOpen: boolean
-  onClose: () => void
+  onClose: (deletedId?: string) => void
 }) {
   const router = useRouter()
   const [state, formAction, isPending] = useActionState(updateTransaction, null)
@@ -67,8 +67,8 @@ export default function EditTransactionModal({
       const res = await deleteTransaction(transaction.id)
       setIsDeleting(false)
       if (res?.success) {
+        onClose(transaction.id)
         router.refresh()
-        onClose()
       } else if (res?.error) {
         alert(`Gagal menghapus: ${res.error}`)
       }

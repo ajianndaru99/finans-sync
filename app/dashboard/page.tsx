@@ -6,6 +6,9 @@ import AutoSyncManager from '@/app/components/AutoSyncManager'
 import TransactionList from '@/app/components/TransactionList'
 import AccountList from '@/app/components/AccountList'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function DashboardPage() {
   let accounts: any[] = []
   let transactions: any[] = []
