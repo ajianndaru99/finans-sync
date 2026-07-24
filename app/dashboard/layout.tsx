@@ -23,10 +23,9 @@ export default async function DashboardLayout({
       {/* Sidebar (Desktop only) */}
       <aside className="w-64 flex-col p-6 glass-panel m-4 mr-0 rounded-2xl hidden md:flex">
         <div className="flex items-center mb-10 gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-accent flex items-center justify-center font-bold text-white shadow-lg">
-            FS
-          </div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon-192x192.png" alt="Ajian Family Logo" className="w-9 h-9 rounded-xl shadow-lg border border-emerald-500/20" />
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
             Ajian Family
           </h1>
         </div>
@@ -56,7 +55,11 @@ export default async function DashboardLayout({
         <header className="flex justify-between items-center mb-6 md:mb-8 glass-panel py-3 px-6 rounded-full sticky top-0 z-40 backdrop-blur-xl shadow-lg">
           <h2 className="text-lg font-medium text-gray-200 hidden md:block">Welcome back, <span className="text-primary font-semibold">{fullName}</span></h2>
           {/* Mobile Header */}
-          <div className="md:hidden font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Ajian Family</div>
+          <div className="md:hidden flex items-center gap-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icon-192x192.png" alt="Ajian Family Logo" className="w-7 h-7 rounded-lg shadow" />
+            <span>Ajian Family</span>
+          </div>
           
           <div className="flex items-center gap-4">
             <LogoutButton />
