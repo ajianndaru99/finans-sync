@@ -151,3 +151,58 @@ export async function deleteTransaction(id: string) {
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function deleteAccount(id: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  // Hapus transaksi yang terkait terlebih dahulu
+  await supabase
+    .from('transactions')
+    .delete()
+    .eq('account_id', id)
+    .eq('user_id', user.id)
+
+  // Hapus integrasi akun jika ada
+  await supabase
+    .from('account_integrations')
+    .delete()
+    .eq('account_id', id)
+
+  const { error } = await supabase
+    .from('accounts')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error deleting account:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}
+
+export async function updateAccount(id: string, name: string, currentBalance: number) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  const { error } = await supabase
+    .from('accounts')
+    .update({ name, current_balance: currentBalance })
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error updating account:', error)
+    return { error: error.message }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}

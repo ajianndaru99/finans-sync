@@ -1,7 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
-import Link from 'next/link'
 import LogoutButton from '@/app/components/LogoutButton'
 import BiometricLock from '@/app/components/BiometricLock'
+import { DesktopSidebarNav, MobileBottomNav } from '@/app/components/NavigationLinks'
+import RealtimeSync from '@/app/components/RealtimeSync'
 
 export default async function DashboardLayout({
   children,
@@ -17,6 +18,8 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-background">
+      <RealtimeSync />
+
       {/* Sidebar (Desktop only) */}
       <aside className="w-64 flex-col p-6 glass-panel m-4 mr-0 rounded-2xl hidden md:flex">
         <div className="flex items-center mb-10 gap-3">
@@ -28,20 +31,7 @@ export default async function DashboardLayout({
           </h1>
         </div>
 
-        <nav className="flex-1 space-y-2">
-          <Link href="/dashboard" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors group">
-            <span className="w-2 h-2 rounded-full bg-primary mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            Dashboard
-          </Link>
-          <Link href="/dashboard/transactions" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors group">
-            <span className="w-2 h-2 rounded-full bg-accent mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            Portfolio
-          </Link>
-          <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-sm font-medium rounded-xl hover:bg-white/5 text-gray-300 hover:text-white transition-colors group">
-            <span className="w-2 h-2 rounded-full bg-purple-500 mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-            Integrasi
-          </Link>
-        </nav>
+        <DesktopSidebarNav />
 
         <div className="mt-auto">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
@@ -89,20 +79,7 @@ export default async function DashboardLayout({
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 glass-panel-dark rounded-2xl flex justify-around items-center p-3 z-50 border border-white/10 shadow-2xl">
-        <Link href="/dashboard" className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors">
-          <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-          <span className="text-[10px] font-medium">Home</span>
-        </Link>
-        <Link href="/dashboard/transactions" className="flex flex-col items-center p-2 text-gray-400 hover:text-accent transition-colors">
-          <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-          <span className="text-[10px] font-medium">Portfolio</span>
-        </Link>
-        <Link href="/dashboard/settings" className="flex flex-col items-center p-2 text-gray-400 hover:text-purple-400 transition-colors">
-          <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          <span className="text-[10px] font-medium">Integrasi</span>
-        </Link>
-      </nav>
+      <MobileBottomNav />
     </div>
   )
 }

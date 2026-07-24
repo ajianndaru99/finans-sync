@@ -4,6 +4,7 @@ import AddAccountModal from '@/app/components/AddAccountModal'
 import NewEntryButton from '@/app/components/NewEntryButton'
 import AutoSyncManager from '@/app/components/AutoSyncManager'
 import TransactionList from '@/app/components/TransactionList'
+import AccountList from '@/app/components/AccountList'
 
 export default async function DashboardPage() {
   let accounts: any[] = []
@@ -66,29 +67,7 @@ export default async function DashboardPage() {
           <h3 className="text-base font-semibold text-gray-200">Your Accounts</h3>
           <AddAccountModal />
         </div>
-        {accounts.length === 0 && (
-          <div className="text-gray-500 text-sm py-3 px-1">No accounts found.</div>
-        )}
-        <div className="space-y-2">
-          {accounts.map(acc => (
-            <div key={acc.id} className="glass-panel-dark p-4 flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
-                  acc.type === 'BANK' ? 'bg-accent/20 text-accent' : 'bg-purple-500/20 text-purple-400'
-                }`}>
-                  {acc.type === 'BANK' ? '🏦' : '📱'}
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-gray-100">{acc.name}</p>
-                  <p className="text-xs text-gray-500">{acc.type}</p>
-                </div>
-              </div>
-              <p className={`font-bold text-sm tabular-nums ${Number(acc.current_balance) >= 0 ? 'text-gray-200' : 'text-red-400'}`}>
-                {formatIDR(Number(acc.current_balance))}
-              </p>
-            </div>
-          ))}
-        </div>
+        <AccountList accounts={accounts} />
       </section>
 
       {/* Recent Activity */}
