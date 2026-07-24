@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import LinkAccountButton from '@/app/components/LinkAccountButton'
 
@@ -14,7 +15,16 @@ export default async function SettingsPage({
 
   const params = await searchParams
 
-  const { data: linkedAccounts, error: fetchError } = await supabase
+  // Gunakan service role untuk membaca user_oauth_tokens.
+  // Ini AMAN karena kita sudah verifikasi user.id dari Supabase Auth di atas.
+  // Bypass RLS diperlukan karena policy SELECT mungkin belum terkonfigurasi
+  // dengan benar di semua lingkungan (migration partial, dll).
+  const dbClient = createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data: linkedAccounts, error: fetchError } = await dbClient
     .from('user_oauth_tokens')
     .select('email_address, created_at')
     .eq('user_id', user.id)
