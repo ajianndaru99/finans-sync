@@ -52,22 +52,24 @@ export default async function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col relative overflow-y-auto overflow-x-hidden p-4 md:p-8 pb-24 md:pb-8">
-        <header className="flex justify-between items-center mb-6 md:mb-8 glass-panel py-3 px-6 rounded-full sticky top-0 z-40 backdrop-blur-xl shadow-lg">
+        <header className="flex justify-between items-center mb-5 md:mb-8 glass-panel py-3 px-4 md:px-6 rounded-2xl md:rounded-full sticky top-0 z-40 backdrop-blur-xl shadow-lg border border-white/10">
           <h2 className="text-lg font-medium text-gray-200 hidden md:block">Welcome back, <span className="text-primary font-semibold">{fullName}</span></h2>
-          {/* Mobile Header */}
-          <div className="md:hidden flex items-center gap-2 font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+          {/* Mobile Header: Memanjang 1 baris tanpa menumpuk */}
+          <div className="md:hidden flex items-center gap-2.5 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icon-192x192.png" alt="Ajian Family Logo" className="w-7 h-7 rounded-lg shadow" />
-            <span>Ajian Family</span>
+            <img src="/icon-192x192.png?v=3" alt="Ajian Family Logo" className="w-8 h-8 rounded-xl shadow-md border border-emerald-500/20 shrink-0" />
+            <span className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 whitespace-nowrap truncate">
+              Ajian Family
+            </span>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2.5 shrink-0">
             <LogoutButton />
             {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt={fullName} className="w-10 h-10 rounded-full border-2 border-white/20" />
+              <img src={avatarUrl} alt={fullName} className="w-9 h-9 rounded-full border-2 border-white/20" />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-white/20 flex items-center justify-center font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-white/20 flex items-center justify-center font-bold text-xs text-white">
                 {avatarLetter}
               </div>
             )}

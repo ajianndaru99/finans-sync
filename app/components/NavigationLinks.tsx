@@ -47,6 +47,7 @@ export function DesktopSidebarNav() {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={true}
             className={`relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
               isActive
                 ? `${item.activeBg} border ${item.activeBorder} shadow-lg shadow-black/20`
@@ -124,6 +125,7 @@ export function MobileBottomNav() {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={true}
             className={`relative flex flex-col items-center px-4 py-2 rounded-xl transition-all duration-200 ${
               isActive
                 ? `${item.activeColor} ${item.activeBg} ${item.glow} border font-semibold scale-105`

@@ -149,6 +149,9 @@ export async function deleteTransaction(id: string) {
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/transactions')
+  revalidatePath('/dashboard/settings')
+  revalidatePath('/dashboard', 'layout')
   return { success: true }
 }
 
@@ -183,6 +186,9 @@ export async function deleteAccount(id: string) {
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/transactions')
+  revalidatePath('/dashboard/settings')
+  revalidatePath('/dashboard', 'layout')
   return { success: true }
 }
 
@@ -204,5 +210,8 @@ export async function updateAccount(id: string, name: string, currentBalance: nu
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/transactions')
+  revalidatePath('/dashboard/settings')
+  revalidatePath('/dashboard', 'layout')
   return { success: true }
 }

@@ -2,6 +2,7 @@
 
 import { useState, useActionState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useRouter } from 'next/navigation'
 import { updateTransaction, deleteTransaction } from '@/app/lib/actions/financeActions'
 
 interface Account {
@@ -30,6 +31,7 @@ export default function EditTransactionModal({
   isOpen: boolean
   onClose: () => void
 }) {
+  const router = useRouter()
   const [state, formAction, isPending] = useActionState(updateTransaction, null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -41,9 +43,10 @@ export default function EditTransactionModal({
 
   useEffect(() => {
     if (state?.success) {
+      router.refresh()
       onClose()
     }
-  }, [state, onClose])
+  }, [state, onClose, router])
 
   // Format angka ke rupiah
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,9 +64,14 @@ export default function EditTransactionModal({
   const handleDelete = async () => {
     if (confirm('Yakin ingin menghapus transaksi ini? Saldo akun akan dikembalikan.')) {
       setIsDeleting(true)
-      await deleteTransaction(transaction.id)
+      const res = await deleteTransaction(transaction.id)
       setIsDeleting(false)
-      onClose()
+      if (res?.success) {
+        router.refresh()
+        onClose()
+      } else if (res?.error) {
+        alert(`Gagal menghapus: ${res.error}`)
+      }
     }
   }
 
