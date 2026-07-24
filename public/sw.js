@@ -4,7 +4,7 @@
 // Versi cache dinaikkan setiap ada perubahan signifikan
 // ================================================================
 
-const CACHE_VERSION = 'v4'
+const CACHE_VERSION = 'v10'
 const STATIC_CACHE = `ajian-static-${CACHE_VERSION}`
 const DYNAMIC_CACHE = `ajian-dynamic-${CACHE_VERSION}`
 const ALL_CACHES = [STATIC_CACHE, DYNAMIC_CACHE]
@@ -12,9 +12,9 @@ const ALL_CACHES = [STATIC_CACHE, DYNAMIC_CACHE]
 // Asset statis yang di-precache saat install (wajib ada offline)
 const PRECACHE_URLS = [
   '/',
-  '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
+  '/manifest.json?v=3',
+  '/icon-192x192.png?v=3',
+  '/icon-512x512.png?v=3',
 ]
 
 // ─────────────────────────────────────────────────────────────

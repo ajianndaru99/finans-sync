@@ -25,7 +25,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Ajian Family",
   description: "Aplikasi pelacak keuangan keluarga otomatis",
-  manifest: "/manifest.json",
+  manifest: "/manifest.json?v=3",
+  icons: {
+    icon: "/icon-192x192.png?v=3",
+    shortcut: "/icon-192x192.png?v=3",
+    apple: "/apple-touch-icon.png?v=3",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

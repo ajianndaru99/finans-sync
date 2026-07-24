@@ -76,7 +76,7 @@ export default function PWARegister() {
     const register = async () => {
       try {
         // Daftarkan SW — versi di query string memastikan SW baru terinstall saat ada update
-        const registration = await navigator.serviceWorker.register("/sw.js?v=4");
+        const registration = await navigator.serviceWorker.register("/sw.js?v=10");
         console.log("[PWA] Service Worker registered, scope:", registration.scope);
 
         // Tunggu SW aktif sebelum setup push notification
