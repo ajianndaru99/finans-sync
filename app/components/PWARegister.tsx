@@ -3,11 +3,14 @@
 import { useEffect } from "react";
 
 // Konversi VAPID public key dari Base64URL ke Uint8Array
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+// Return type eksplisit Uint8Array<ArrayBuffer> agar kompatibel dengan
+// PushManager.subscribe applicationServerKey di TypeScript 5.7+
+function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  // new Uint8Array(number) selalu menghasilkan ArrayBuffer biasa (bukan SharedArrayBuffer)
+  const outputArray = new Uint8Array(rawData.length) as Uint8Array<ArrayBuffer>;
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
