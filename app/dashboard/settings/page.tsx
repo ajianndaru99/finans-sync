@@ -73,13 +73,21 @@ export default async function SettingsPage({
           </p>
         </div>
 
-        {/* ── Error tabel (migration belum dijalankan) ── */}
+        {/* ── Error tabel atau database ── */}
         {fetchError && (
-          <div className="mb-4 flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-            <span className="text-base mt-0.5">⚠️</span>
-            <p className="text-yellow-400 text-xs leading-relaxed">
-              Tabel belum disiapkan. Jalankan <strong>migration_multi_account.sql</strong> di Supabase SQL Editor.
+          <div className="mb-4 flex flex-col gap-1 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-xs">
+            <div className="flex items-center gap-2 font-semibold">
+              <span>⚠️</span>
+              <span>Gagal membaca data integrasi Gmail</span>
+            </div>
+            <p className="text-yellow-300/80 font-mono text-[11px] break-all mt-1">
+              Error: {fetchError.message} {fetchError.details ? `(${fetchError.details})` : ''}
             </p>
+            {fetchError.code === '42P01' && (
+              <p className="mt-1 text-[11px]">
+                (Tabel <code>user_oauth_tokens</code> belum ada di database Supabase. Silakan jalankan <strong>migration_multi_account.sql</strong> di SQL Editor Supabase.)
+              </p>
+            )}
           </div>
         )}
 
