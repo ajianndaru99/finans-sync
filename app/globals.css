@@ -31,7 +31,7 @@
   --glass-border: rgba(255, 255, 255, 0.08);
 }
 
-body {
+html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
@@ -41,40 +41,50 @@ body {
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Performance: Hilangkan 300ms touch delay & enable smooth momentum scrolling */
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
-/* Glassmorphism utility classes */
+/* Hardware accelerated Glassmorphism utility classes */
 .glass-panel {
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 1rem;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Versi lebih gelap untuk account cards */
 .glass-panel-dark {
   background: rgba(10, 10, 12, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .glass-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
   border-radius: 0.75rem;
+  transform: translateZ(0);
 }
 
 /* Custom Scrollbar for sleek look */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
