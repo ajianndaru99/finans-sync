@@ -13,7 +13,18 @@ async function hashPin(pin: string): Promise<string> {
 }
 
 export default function BiometricLock({ children }: { children: React.ReactNode }) {
-  const [isLocked, setIsLocked] = useState(true);
+  const [isLocked, setIsLocked] = useState(() => {
+    if (typeof window === "undefined") return false;
+    // Grace period check
+    const lastUnlocked = localStorage.getItem("last_unlocked_at");
+    if (lastUnlocked && Date.now() - parseInt(lastUnlocked, 10) < GRACE_PERIOD_MS) {
+      return false;
+    }
+    // Jika belum pernah buat PIN, tidak perlu mengunci
+    const hasPin = !!localStorage.getItem(PIN_HASH_KEY);
+    return hasPin;
+  });
+
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [showPinSetup, setShowPinSetup] = useState(false);
   const [showPinInput, setShowPinInput] = useState(false);
@@ -27,19 +38,12 @@ export default function BiometricLock({ children }: { children: React.ReactNode 
   const hasPinStored = typeof window !== "undefined" && !!localStorage.getItem(PIN_HASH_KEY);
 
   useEffect(() => {
-    // Cek grace period
-    const lastUnlocked = localStorage.getItem("last_unlocked_at");
-    if (lastUnlocked && Date.now() - parseInt(lastUnlocked, 10) < GRACE_PERIOD_MS) {
-      setIsLocked(false);
-      return;
-    }
-
-    // Cek dukungan biometrik
-    if (window.PublicKeyCredential) {
+    // Cek dukungan biometrik jika terkunci
+    if (isLocked && window.PublicKeyCredential) {
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
         .then(setBiometricSupported);
     }
-  }, []);
+  }, [isLocked]);
 
   const unlockWithBiometric = async () => {
     setIsLoading(true);

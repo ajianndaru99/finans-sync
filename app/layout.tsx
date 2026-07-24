@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import PWARegister from "./components/PWARegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,20 +13,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: "Ajian Family",
-  description: "Aplikasi pelacak keuangan otomatis",
-  manifest: "/manifest.json?v=2",
-  themeColor: "#059669",
+  description: "Aplikasi pelacak keuangan keluarga otomatis",
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Ajian Family",
   },
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
+  other: {
+    "mobile-web-app-capable": "yes",
+    "application-name": "Ajian Family",
+  },
 };
-
-import PWARegister from "./components/PWARegister";
 
 export default function RootLayout({
   children,
@@ -37,7 +47,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-[#09090b] text-[#fafafa]">
         <PWARegister />
         {children}
       </body>
