@@ -74,7 +74,8 @@ export async function POST(req: NextRequest) {
             updated_at: new Date().toISOString()
           })
           .eq('user_id', userId)
-        console.log('✅ Access token refreshed and saved.')
+          .eq('email_address', emailAddress) // FIX: spesifik per email, bukan semua email user
+        console.log(`✅ Access token refreshed for ${emailAddress}`)
       }
     })
 
@@ -276,13 +277,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 8. Update history ID secara atomik
+    // 8. Update history ID secara atomik PER EMAIL (penting untuk multi-akun!)
     if (newHistoryId && newHistoryId !== oldHistoryId) {
       await dbClient
         .from('user_oauth_tokens')
         .update({ history_id: newHistoryId })
         .eq('user_id', userId)
-        .eq('history_id', oldHistoryId)
+        .eq('email_address', emailAddress) // FIX: filter per email, bukan per historyId lama
     }
 
     return NextResponse.json({ status: 'success', processed: newMessages.length })

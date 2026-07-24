@@ -19,50 +19,63 @@ export async function GET(request: Request) {
       // Save Google tokens for offline webhook usage
       const { provider_token, provider_refresh_token, user } = data.session
 
-      // Default to user.email, but try to fetch the actual email from the Google token
-      // This is crucial for multi-email linking (where the primary user.email doesn't match the new token's email)
-      let tokenEmail = user.email
-      if (provider_token) {
+      // Jika provider_token tidak ada, OAuth flow tidak berjalan dengan benar.
+      // Ini bisa terjadi jika alur bukan dari signInWithOAuth (misal: magic link).
+      // Kita lewati penyimpanan token agar tidak menyimpan token tidak valid.
+      if (!provider_token) {
+        console.warn('[callback] provider_token tidak tersedia. Mungkin bukan alur OAuth Google. Melewati penyimpanan token.')
+      } else {
+        // Ambil email dari Google userinfo API untuk akurasi (penting untuk multi-akun:
+        // user.email mungkin email akun utama, bukan akun Gmail yang baru saja dipilih)
+        let tokenEmail = user.email ?? ''
         try {
           const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
             headers: { Authorization: `Bearer ${provider_token}` }
           })
           if (userInfoRes.ok) {
             const userInfo = await userInfoRes.json()
-            if (userInfo.email) {
-              tokenEmail = userInfo.email
-            }
+            if (userInfo.email) tokenEmail = userInfo.email
           }
         } catch (e) {
-          console.error('Failed to fetch userinfo for token email', e)
+          console.error('[callback] Gagal fetch Google userinfo:', e)
+        }
+
+        if (!tokenEmail) {
+          console.error('[callback] Tidak dapat menentukan email untuk token. Melewati upsert.')
+        } else {
+          // Upsert dengan composite key (user_id, email_address)
+          // Ini memungkinkan satu user memiliki BANYAK baris (satu per Gmail)
+          const { error: upsertError } = await supabase
+            .from('user_oauth_tokens')
+            .upsert({
+              user_id: user.id,
+              email_address: tokenEmail,
+              encrypted_access_token: encrypt(provider_token),
+              encrypted_refresh_token: encrypt(provider_refresh_token || ''),
+              history_id: '0'
+            }, { onConflict: 'user_id,email_address' })
+
+          if (upsertError) {
+            console.error('[callback] Upsert Error:', upsertError.message, upsertError.details)
+          } else {
+            console.log(`[callback] Token tersimpan untuk: ${tokenEmail}`)
+          }
         }
       }
 
-      // Upsert tokens. We use user_id + email_address as the unique key now (after the SQL migration)
-      const { error: upsertError } = await supabase
-        .from('user_oauth_tokens')
-        .upsert({
-          user_id: user.id,
-          email_address: tokenEmail,
-          encrypted_access_token: encrypt(provider_token || 'MISSING_PROVIDER_TOKEN'),
-          encrypted_refresh_token: encrypt(provider_refresh_token || ''),
-          history_id: '0'
-        }, { onConflict: 'user_id,email_address' })
-
-      if (upsertError) {
-        console.error('Upsert Error:', upsertError)
-      }
-
+      // Setelah linking akun baru, redirect ke /dashboard/settings agar user
+      // dapat melihat akun Gmail baru yang baru saja ditambahkan.
+      // Jika ada parameter 'next' eksplisit, hormati itu.
+      const redirectPath = next !== '/dashboard' ? next : '/dashboard/settings'
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
 
       if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`)
+        return NextResponse.redirect(`${origin}${redirectPath}`)
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+        return NextResponse.redirect(`https://${forwardedHost}${redirectPath}`)
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        return NextResponse.redirect(`${origin}${redirectPath}`)
       }
     }
   }

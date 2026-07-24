@@ -20,16 +20,19 @@ CREATE TABLE IF NOT EXISTS public.transactions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Tabel User OAuth Tokens (Untuk menyimpan token Gmail API)
+-- 2. Tabel User OAuth Tokens (Untuk menyimpan token Gmail API per-akun)
+-- PENTING: UNIQUE(user_id, email_address) → satu user bisa punya BANYAK email Gmail
+-- Ini yang memungkinkan multi-akun (email kerja, email personal, dll)
 CREATE TABLE IF NOT EXISTS public.user_oauth_tokens (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
-    email_address TEXT NOT NULL UNIQUE,
+    email_address TEXT NOT NULL,
     encrypted_access_token TEXT NOT NULL,
     encrypted_refresh_token TEXT NOT NULL,
-    history_id TEXT,
+    history_id TEXT DEFAULT '0',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, email_address) -- composite: bukan global UNIQUE!
 );
 
 -- 3. Tabel Account Integrations (Untuk menghubungkan email Gmail ke rekening)
