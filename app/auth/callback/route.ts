@@ -63,19 +63,16 @@ export async function GET(request: Request) {
         }
       }
 
-      // Setelah linking akun baru, redirect ke /dashboard/settings agar user
-      // dapat melihat akun Gmail baru yang baru saja ditambahkan.
-      // Jika ada parameter 'next' eksplisit, hormati itu.
-      const redirectPath = next !== '/dashboard' ? next : '/dashboard/settings'
+      // Redirect ke halaman yang diminta atau dashboard
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
 
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${redirectPath}`)
+        return NextResponse.redirect(`${origin}${next}`)
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${redirectPath}`)
+        return NextResponse.redirect(`https://${forwardedHost}${next}`)
       } else {
-        return NextResponse.redirect(`${origin}${redirectPath}`)
+        return NextResponse.redirect(`${origin}${next}`)
       }
     }
   }
